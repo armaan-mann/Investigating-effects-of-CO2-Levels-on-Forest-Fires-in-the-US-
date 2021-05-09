@@ -3,10 +3,12 @@ Final Project Title: Investigating the Implications of CO2 Levels
                     on the Number of Forest Fires in the US
 
 Objective: This file does all the data wrangling and provides
-key infomation about how the data is stored which further uses these functions
+key information about how the data is stored which further uses these functions
 to generate the plot and the US map.
 
 By: Ansh Malhotra, Armaan Mann, Leya Abubaker, Gabriel Pais
+
+This file is Copyright (c) 2020 Ansh Malhotra, Armaan Mann, Leya Abubaker, Gabriel Pais
 """
 
 # Importing Packages
@@ -18,13 +20,13 @@ from typing import List
 # The functions below are used to obtain the data from the csv files
 # and form it into a dictionary.
 # **Optional** you can run the code below in the console to see the extraction of the data
-# 1. First function is for storing the CO2 Emissions through the 'CO2_DataSet.csv'
-# 2. Second function is for collecting the data through 'FireData10yrs.csv'
-# 3. Third function is for collecting the data through 'FireData5yrs.csv'
+# 1. read_file_co is for storing the CO2 Emissions through the 'CO2_DataSet.csv'
+# 2. read_file_fire is for collecting the data through 'FireData10yrs.csv'
+# 3. read_file_map is for collecting the data through 'FireData5yrs.csv'
 #############################################################################################
 def read_file_co(filepath: str) -> dict:
     """
-    Return a dictionary containing the State name and the years as
+    Return a dictionary containing the State name and the years from 2005 to 2015.
 
     Preconditions:
         - filepath refers to a csv file in the format of
@@ -60,13 +62,11 @@ def read_file_co(filepath: str) -> dict:
 
 def read_file_fire(filepath: str) -> dict:
     """
-    Return a dictionary of State, Latitude, Longitude, Time, Fire Magnitude,
-    Wind Contained, Humid Contained, Remoteness
-    from the data mapped from a CSV file.
+    Return a dictionary of State and Time from the data mapped from the CSV file.
 
     Preconditions:
         - filepath refers to a csv file in the format of
-          data/ontario_covid_cases_2020_10_17.csv
+          'FireData10yrs.csv'
     """
     with open(filepath) as file:
         reader = csv.reader(file)
@@ -85,13 +85,13 @@ def read_file_fire(filepath: str) -> dict:
 
 def read_file_map(filepath: str) -> dict:
     """
-    Return a dictionary of State, Latitude, Longitude, Time, Fire Magnitude,
-    Wind Contained, Humid Contained, Remoteness
-    from the data mapped from a CSV file.
+    Return a dictionary of State, Latitude, Longitude, Time, Fire Size,
+    Fire Size Class, Fire Magnitude, Wind Contained, Humid Contained,
+    Remoteness and Links from the data mapped from a CSV file.
 
     Preconditions:
         - filepath refers to a csv file in the format of
-          'FireData10yrs.csv'
+          'FireData5yrs.csv'
     """
     with open(filepath) as file:
         reader = csv.reader(file)
@@ -123,7 +123,7 @@ def read_file_map(filepath: str) -> dict:
 
 
 ################################################################################################
-# The function collects the values for the y-axis of the line and the x-axis for both the
+# get_data_fire collects the values for the y-axis of the line and the x-axis for both the
 # line and bars and the values for x-axis stays the same.
 #
 # Below are the states and the corresponding abbreviation to be used the following functions:
@@ -183,15 +183,15 @@ def read_file_map(filepath: str) -> dict:
 def get_data_fire(state_name: str) -> List[list]:
     """
     Return the x values for the graph as a list of 'YYYY'.
-    Return the y values for the line in the graph as list.
+    Return the y values for the line points in the graph as list.
 
     The x values represent the years from 2005 to 2015.
     The y values represent the list of each years fire frequencies for that particular
     state.
 
-    Preconditions
+    Preconditions:
         - len(state_name) == 2
-        - all(is.upper(x) for x in state_name)
+        - all(str.isupper(i) for i in state_name)
         - state_name should match the given corresponding state abbreviation
         from the given list above.
     """
@@ -225,14 +225,15 @@ def get_data_fire(state_name: str) -> List[list]:
 # The values of the y-axis of the bars are on the left side.
 # One bar is storing values for the cars and the other is for the trucks
 ################################################################################################
-def get_data_co2(state_name: str) -> List[int]:
+def get_data_co2(state_name: str) -> list:
     """
-    Return the y values for the bars in the graph as list of cars and trucks.
-    The y values represent CO2 emissions produced by cars and trucks.
+    Return the y values for the bars in the graph of the co2 emissions.
 
-    Preconditions
+    The y values represent CO2 emissions produced by each state from teh years 2005 to 2015.
+
+    Preconditions:
         - len(state_name) == 2
-        - all(is.upper(x) for x in state_name)
+        - all(str.isupper(i) for i in state_name)
         - state_name should match the given corresponding state abbreviation
         from the given list above and the function above.
     """
@@ -267,42 +268,43 @@ def total_fire() -> list:
     Return a list of y-values per year.
 
     y-values represent the total forest fires happened per year from 2005 to 2015.
+    The y-values are for the entire US.
     """
     year = '2005'
-    y = []
+    y_value = []
     freq = 0
     extract = read_file_fire("FireData10yrs.csv")
 
     for x in extract["Time"]:
 
         if x != year:
-            list.append(y, freq)
+            list.append(y_value, freq)
             freq = 0
             year = x
             freq += 1
         else:
             freq += 1
 
-    list.append(y, freq)
-    return y
+    list.append(y_value, freq)
+    return y_value
 
 
 if __name__ == '__main__':
-    import python_ta
-
-    python_ta.check_all(config={
-        'allowed-io': ['graph_data', 'read_file_2', 'read_file_fire',
-                       'read_file_co', 'read_file_map'],
-        'extra-imports': ['python_ta.contracts', 'csv', 'datetime',
-                          'plotly.graph_objects', 'plotly.subplots', 'numpy',
-                          'matplotlib.pyplot'],
-        'max-line-length': 100,
-        'max-args': 6,
-        'max-locals': 25,
-        'disable': ['R1705'],
-    })
+    # import python_ta
+    #
+    # python_ta.check_all(config={
+    #     'allowed-io': ['graph_data', 'read_file_2', 'read_file_fire',
+    #                    'read_file_co', 'read_file_map'],
+    #     'extra-imports': ['python_ta.contracts', 'csv', 'datetime',
+    #                       'plotly.graph_objects', 'plotly.subplots', 'numpy',
+    #                       'matplotlib.pyplot'],
+    #     'max-line-length': 100,
+    #     'max-args': 6,
+    #     'max-locals': 25,
+    #     'disable': ['R1705'],
+    # })
 
     import python_ta.contracts
 
-    python_ta.contracts.DEBUG_CONTRACTS = False
+    python_ta.contracts.DEBUG_CONTRACTS = True
     python_ta.contracts.check_all_contracts()

@@ -1,11 +1,15 @@
 """
 Part 2: Visual Representation of the Forest Fires in US (Map) (2010 - 2015)
-Objective: In this part the forst fires data of 10 years
+Objective: In this part the forest fires data of 10 years
 has been shrink down to just 5 years which from 2010 to 2015 of the US.
 The map opens up in the browser with some features:
     - Ability to Zoom in and out
     - Ability to move around the map.
     - Each marker on the US map provides basic insights of the forest fires.
+    - Ability to change the map's layout
+    - Ability to change heat map layers
+
+This file is Copyright (c) 2020 Ansh Malhotra, Armaan Mann, Leya Abubaker, Gabriel Pais
 """
 # Importing Packages
 import os
@@ -17,7 +21,7 @@ from main import read_file_map
 
 
 ############################################################################################
-# The function below generates the map of the whole world.
+# make_map below generates the map of the whole world.
 # Only the US within the map has borders.
 # Markers are placed depending on the corresponding latitude and longitudes.
 # Each marker contains some information of the forest fire.
@@ -52,19 +56,55 @@ def make_map() -> None:
     # Creating a Marker Cluster
     cluster = folium.plugins.MarkerCluster(name="Markers").add_to(m)
 
-    x = pd.read_csv('FireData5yrs.csv')
+    heatmap = pd.read_csv('FireData5yrs.csv')
 
     # Adding a heat map:
     folium.Choropleth(
         geo_data=outline_us,
-        data=x,
-        columns=['state', 'fire_mag'],
+        data=heatmap,
+        columns=['state', 'Vegetation'],
         name='Fire Magnitude',
         key_on='feature.id',
         fill_color='YlGn',
         fill_opacity=0.5,
         line_opacity=0.5,
-        legend_name='idk',
+        legend_name='Fire Magnitude',
+        highlight=True).add_to(m)
+
+    folium.Choropleth(
+        geo_data=outline_us,
+        data=heatmap,
+        columns=['state', "fire_mag"],
+        name='Vegetation',
+        key_on='feature.id',
+        fill_color='RdPu',
+        fill_opacity=0.5,
+        line_opacity=0.5,
+        legend_name='Vegetation',
+        highlight=True).add_to(m)
+
+    folium.Choropleth(
+        geo_data=outline_us,
+        data=heatmap,
+        columns=['state', "Hum_cont"],
+        name='Humidity',
+        key_on='feature.id',
+        fill_color='YlOrRd',
+        fill_opacity=0.5,
+        line_opacity=0.5,
+        legend_name='Humidity',
+        highlight=True).add_to(m)
+
+    folium.Choropleth(
+        geo_data=outline_us,
+        data=heatmap,
+        columns=['state', "Wind_cont"],
+        name='Wind',
+        key_on='feature.id',
+        fill_color='PuBuGn',
+        fill_opacity=0.5,
+        line_opacity=0.5,
+        legend_name='Wind',
         highlight=True).add_to(m)
 
     # Iterating through the data and at each iteration adding its value.
@@ -111,22 +151,22 @@ def make_map() -> None:
     webbrowser.open('m.html')
 
 
-# if __name__ == '__main__':
-#     import python_ta
-#
-#     python_ta.check_all(config={
-#         'allowed-io': ['graph_data', 'main', 'read_file_2'],
-#         'extra-imports': ['python_ta.contracts', 'csv', 'datetime',
-#                           'plotly.graph_objects', 'plotly.subplots', 'numpy',
-#                           'matplotlib.pyplot', 'folium', 'pandas', 'os', 'webbrowser', 'main',
-#                           'read_file_2'],
-#         'max-line-length': 150,
-#         'max-args': 6,
-#         'max-locals': 25,
-#         'disable': ['R1705', 'E9989'],
-#     })
-#
-#     import python_ta.contracts
-#
-#     python_ta.contracts.DEBUG_CONTRACTS = False
-#     python_ta.contracts.check_all_contracts()
+if __name__ == '__main__':
+    import python_ta
+
+    python_ta.check_all(config={
+        'allowed-io': ['graph_data', 'main', 'read_file_2'],
+        'extra-imports': ['python_ta.contracts', 'csv', 'datetime',
+                          'plotly.graph_objects', 'plotly.subplots', 'numpy',
+                          'matplotlib.pyplot', 'folium', 'pandas', 'os', 'webbrowser', 'main',
+                          'read_file_2'],
+        'max-line-length': 150,
+        'max-args': 6,
+        'max-locals': 25,
+        'disable': ['R1705', 'E9989'],
+    })
+
+    import python_ta.contracts
+
+    python_ta.contracts.DEBUG_CONTRACTS = True
+    python_ta.contracts.check_all_contracts()
